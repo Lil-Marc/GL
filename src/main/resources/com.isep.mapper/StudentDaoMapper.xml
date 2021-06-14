@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.isep.dao.StudentDao">
+
+    <select id="findStudentByEmail" parameterType="String" resultType="com.isep.entity.Student">
+        select * from student where email=#{email}
+    </select>
+
+    <insert id="saveStudent" parameterType="com.isep.entity.Student" useGeneratedKeys="true" keyProperty="id">
+        insert into student values (#{id},#{name},#{email},#{password},#{phoneNumber},#{residentialAddress},#{identify},#{niveau},#{school})
+    </insert>
+
+    <select id="findById" parameterType="Integer" resultType="com.isep.entity.Student">
+        select * from student where id=#{id}
+    </select>
+    <update id="updateInfo" parameterType="com.isep.entity.Student">
+        update student set name=#{name},email=#{email},password=#{password},phoneNumber=#{phoneNumber},residentialAddress=#{residentialAddress},niveau=#{niveau},school=#{school} where id=#{id}
+    </update>
+
+    <select id="courseSearch" parameterType="com.isep.entity.Course" resultType="com.isep.entity.Course">
+        select * from course
+        <where>
+            <if test="teacher!=null">
+                and teacher=#{teacher}
+            </if>
+            <if test="specialty!=null">
+                and specialty=#{specialty}
+            </if>
+        </where>
+    </select>
+
+
+
+</mapper>

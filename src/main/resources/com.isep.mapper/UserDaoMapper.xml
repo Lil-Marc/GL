@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.isep.dao.UserDao">
+
+    <select id="findOne" parameterType="String" resultType="com.isep.entity.User">
+        select * from info where email=#{email} and password=#{password}
+    </select>
+
+    <select id="findByEmail" parameterType="String" resultType="com.isep.entity.User">
+        select * from info where email=#{email}
+    </select>
+
+    <select id="findById" parameterType="Integer" resultType="com.isep.entity.User">
+        select * from info where id=#{id}
+    </select>
+
+    <select id="findAll" resultType="com.isep.entity.User">
+        select * from info
+    </select>
+
+    <insert id="save" parameterType="com.isep.entity.User" useGeneratedKeys="true" keyProperty="id">
+        insert into info values (#{id},#{name},#{email},#{password},#{phoneNumber},#{residentialAddress})
+    </insert>
+
+    <update id="updateUserInfo" parameterType="com.isep.entity.User">
+        update info set name=#{name},email=#{email},password=#{password},phoneNumber=#{phoneNumber},residentialAddress=#{residentialAddress} where id=#{id}
+    </update>
+
+    <resultMap id="HouseMap" type="com.isep.entity.House">
+        <id column="ID" jdbcType="INTEGER" property="id" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="restriction" typeHandler="com.isep.handler.JsonTypeHandler" property="restriction" />
+        <result column="service" typeHandler="com.isep.handler.JsonTypeHandler" property="service" />
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="img"  property="img" />
+        <result column="houseSize" jdbcType="VARCHAR" property="houseSize" />
+        <result column="ifBooked" jdbcType="TINYINT" property="ifBooked" />
+        <result column="possessor" jdbcType="VARCHAR" property="possessor" />
+        <result column="tenantId" jdbcType="VARCHAR" property="tenantId" />
+    </resultMap>
+
+
+    <insert id="houseEdit" parameterType="com.isep.entity.House" useGeneratedKeys="true" keyProperty="id">
+        insert into house
+        values(#{id},#{description},#{restriction,typeHandler=com.isep.handler.JsonTypeHandler},#{service,typeHandler=com.isep.handler.JsonTypeHandler}
+        ,#{address},#{img},#{houseSize},false,#{possessor},0)
+    </insert>
+
+    <update id="houseChange" parameterType="com.isep.entity.House">
+        update house set description=#{description},service=#{service,typeHandler=com.isep.handler.JsonTypeHandler}
+                       ,restriction=#{restriction,typeHandler=com.isep.handler.JsonTypeHandler}
+                       ,address=#{address},img=#{img},houseSize=#{houseSize},possessor=#{possessor} where id=#{id}
+    </update>
+
+    <select id="findHouse" parameterType="String" resultMap="HouseMap">
+        select * from house where possessor=#{possessor}
+    </select>
+
+    <select id="findHouseById" parameterType="Integer" resultMap="HouseMap">
+        select * from house where id=#{id}
+    </select>
+
+    <select id="searchHouse" parameterType="com.isep.entity.House" resultMap="HouseMap">
+        select * from house
+        <where>
+            ifBooked = 0
+            <if test="address!=null">
+                and address like concat('%',#{address},'%')
+            </if>
+            <if test="service!=null">
+                and service=#{service,typeHandler=com.isep.handler.JsonTypeHandler}
+            </if>
+            <if test="restriction!=null">
+                and restriction=#{restriction,typeHandler=com.isep.handler.JsonTypeHandler}
+            </if>
+            <if test="houseSize!=null">
+                and houseSize=#{houseSize}
+            </if>
+        </where>
+    </select>
+
+    <update id="bookHouse" parameterType="com.isep.entity.House">
+        update house set tenantId=#{tenantId},ifBooked=#{ifBooked} where id=#{id}
+    </update>
+
+
+
+
+
+</mapper>
